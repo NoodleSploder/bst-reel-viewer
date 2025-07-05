@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///gundam_apps/bst-reel-viewer/src/app/animations.css"],"sourcesContent":["\n.reel-card-container {\n    perspective: 1000px;\n    overflow: hidden;\n    position: relative;\n    width: 100%;\n    height: 100%;\n}\n\n.reel-card {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    backface-visibility: hidden;\n    transition: transform 0.6s ease-in-out;\n    border-radius: 1rem;\n    overflow: hidden;\n    background-color: #1a1a1a;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);\n}\n\n/* Initial state for entering slide */\n.slide-enter-up {\n    transform: translateY(100%);\n}\n.slide-enter-down {\n    transform: translateY(-100%);\n}\n\n/* Active state for entering slide */\n.slide-enter-active {\n    transform: translateY(0);\n}\n\n/* Initial state for exiting slide */\n.slide-exit {\n    transform: translateY(0);\n}\n\n/* Active state for exiting slide */\n.slide-exit-active-up {\n    transform: translateY(-100%);\n}\n.slide-exit-active-down {\n    transform: translateY(100%);\n}\n"],"names":[],"mappings":"AACA;;;;;;;;AAQA;;;;;;;;;;;;AAaA;;;;AAGA;;;;AAKA;;;;AAUA;;;;AAGA","debugId":null}}]
+}
