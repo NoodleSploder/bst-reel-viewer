@@ -6,6 +6,7 @@ import { ReelPlayer } from "../components/ReelPlayer";
 import reelsData from "../data/reels.json";
 import { motion, AnimatePresence } from "framer-motion";
 import "./animations.css";
+import { UploadVideo } from "../components/UploadVideo";
 
 // Helper: flatten any tree to a right-linear chain (robust, always in predicted order)
 function flattenToRightChain(nodes: Reel[]): ReelNode | null {
@@ -241,6 +242,14 @@ export default function Home() {
 	cardRef.current?.focus?.();
   }, [currentNode]);
 
+  // Add upload handler
+  const handleUpload = async (file: File) => {
+    // This is a placeholder. In a real app, you would POST to an API endpoint.
+    // For now, just show an alert.
+    alert(`Uploaded: ${file.name}\n(Backend should call add_watermark.py after upload)`);
+    // Example: await fetch('/api/upload', { method: 'POST', body: formData });
+  };
+
   // Loading and error states
   if (!currentNode) {
 	return (
@@ -252,6 +261,7 @@ export default function Home() {
 
   return (
 	<div className="flex flex-col items-center justify-center min-h-screen bg-black text-white overflow-hidden">
+	  <UploadVideo onUpload={handleUpload} />
 	  <div className="w-full max-w-md h-[80vh] flex items-center justify-center">
 		<div className="flex flex-row items-center w-full h-full justify-center relative">
 		  <div className="flex-1 h-full flex items-center justify-center">
