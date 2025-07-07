@@ -36,6 +36,10 @@ export async function POST(req: NextRequest) {
     pythonProcess.on('close', resolve);
   });
 
+  console.log('Python script output:', result);
+  console.log('Python script error:', error);
+  console.log('Python script exit code:', exitCode);
+
   if (exitCode !== 0) {
     return NextResponse.json({ error: error || 'Python analysis failed' }, { status: 500 });
   }

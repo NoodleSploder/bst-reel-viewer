@@ -7,16 +7,16 @@ from torchvision.models import ResNet50_Weights
 import decord
 from decord import VideoReader, cpu
 import numpy as np
-import urllib.request
 
-# Load a pretrained model (e.g., ResNet50)
+# 1. Load a pretrained model (ResNet50)
 weights = ResNet50_Weights.IMAGENET1K_V1
 model = models.resnet50(weights=weights)
 model.eval()
 
-# ImageNet class labels
+# 2. ImageNet class labels
 LABELS = weights.meta['categories']
 
+# 3. Define a single, correct transform for individual frames
 transform = T.Compose([
     T.ToPILImage(),
     T.Resize(256),
@@ -26,30 +26,53 @@ transform = T.Compose([
 ])
 
 def analyze_video(video_path):
-    vr = VideoReader(video_path, ctx=cpu(0))
-    num_frames = len(vr)
-    # Sample up to 16 evenly spaced frames
-    idxs = np.linspace(0, num_frames - 1, num=min(16, num_frames), dtype=int)
-    frames = vr.get_batch(idxs).asnumpy()
-    keywords = set()
-    for frame in frames:
-        img = transform(frame)
-        img = img.unsqueeze(0)
-        with torch.no_grad():
-            outputs = model(img)
-            _, preds = outputs.topk(3, 1, True, True)
-            for pred in preds[0]:
-                keywords.add(LABELS[pred])
-    return list(keywords)
+    try:
+        vr = VideoReader(video_path, ctx=cpu(0))
+        # Sample up to 32 evenly spaced frames
+        num_frames = len(vr)
+        if num_frames == 0:
+            return {"error": "Video has no frames"}
+
+        indices = np.linspace(0, num_frames - 1, num=min(num_frames, 32), dtype=int)
+        frames = vr.get_batch(indices).asnumpy()
+
+        all_preds = []
+        for frame in frames:
+            img = transform(frame).unsqueeze(0) # Add batch dimension
+            with torch.no_grad():
+                outputs = model(img)
+                # Get top 5 predictions for the frame
+                _, preds = torch.topk(outputs, 5)
+                all_preds.extend(preds[0].cpu().numpy())
+
+        # Aggregate predictions: count occurrences of each predicted class
+        if not all_preds:
+            return []
+
+        pred_counts = {}
+        for pred in all_preds:
+            pred_counts[pred] = pred_counts.get(pred, 0) + 1
+
+        # Sort by count to find the most common predictions
+        sorted_preds = sorted(pred_counts.keys(), key=lambda p: pred_counts[p], reverse=True)
+
+        # Return the top 5 most frequent keywords
+        keywords = [LABELS[pred] for pred in sorted_preds[:5]]
+        return keywords
+
+    except decord.DECORDError as e:
+        return {"error": f"Failed to read video file: {str(e)}"}
+    except Exception as e:
+        # Catch other potential errors during processing
+        return {"error": f"An unexpected error occurred: {str(e)}"}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(json.dumps({"error": "No video path provided"}))
         sys.exit(1)
+
     video_path = sys.argv[1]
-    try:
-        keywords = analyze_video(video_path)
-        print(json.dumps(keywords))
-    except Exception as e:
-        print(json.dumps({"error": str(e)}))
-        sys.exit(1)
+    result = analyze_video(video_path)
+
+    # The script will now output either a list of keywords or an error object
+    print(json.dumps(result))

@@ -124,6 +124,9 @@ async function POST(req) {
     const exitCode = await new Promise((resolve)=>{
         pythonProcess.on('close', resolve);
     });
+    console.log('Python script output:', result);
+    console.log('Python script error:', error);
+    console.log('Python script exit code:', exitCode);
     if (exitCode !== 0) {
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             error: error || 'Python analysis failed'
