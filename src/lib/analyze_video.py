@@ -3,20 +3,19 @@ import sys
 import json
 import torchvision.transforms as T
 from torchvision import models
+from torchvision.models import ResNet50_Weights
 import decord
 from decord import VideoReader, cpu
 import numpy as np
 import urllib.request
 
 # Load a pretrained model (e.g., ResNet50)
-model = models.resnet50(pretrained=True)
+weights = ResNet50_Weights.IMAGENET1K_V1
+model = models.resnet50(weights=weights)
 model.eval()
 
 # ImageNet class labels
-LABELS_URL = "https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt"
-LABELS = []
-with urllib.request.urlopen(LABELS_URL) as f:
-    LABELS = [line.strip().decode('utf-8') for line in f.readlines()]
+LABELS = weights.meta['categories']
 
 transform = T.Compose([
     T.ToPILImage(),
