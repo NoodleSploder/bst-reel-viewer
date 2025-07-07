@@ -238,7 +238,18 @@ const UploadVideo = ({ onUpload })=>{
         setUploading(true);
         setError(null);
         try {
-            await onUpload(file);
+            // Upload to API
+            const formData = new FormData();
+            formData.append("file", file);
+            const res = await fetch("/api/upload", {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Upload failed");
+            // Optionally, handle keywords here
+            alert("Keywords: " + (data.keywords ? data.keywords.join(", ") : "None"));
+            if (onUpload) onUpload(file);
         } catch (err) {
             setError(err.message || "Upload failed");
         } finally{
@@ -256,7 +267,7 @@ const UploadVideo = ({ onUpload })=>{
                 className: "hidden"
             }, void 0, false, {
                 fileName: "[project]/src/components/UploadVideo.tsx",
-                lineNumber: 28,
+                lineNumber: 39,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -266,7 +277,7 @@ const UploadVideo = ({ onUpload })=>{
                 children: uploading ? "Uploading..." : "Upload New Video"
             }, void 0, false, {
                 fileName: "[project]/src/components/UploadVideo.tsx",
-                lineNumber: 35,
+                lineNumber: 46,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -274,13 +285,13 @@ const UploadVideo = ({ onUpload })=>{
                 children: error
             }, void 0, false, {
                 fileName: "[project]/src/components/UploadVideo.tsx",
-                lineNumber: 42,
+                lineNumber: 53,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/UploadVideo.tsx",
-        lineNumber: 27,
+        lineNumber: 38,
         columnNumber: 5
     }, this);
 };

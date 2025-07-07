@@ -15,7 +15,18 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ onUpload }) => {
     setUploading(true);
     setError(null);
     try {
-      await onUpload(file);
+      // Upload to API
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      // Optionally, handle keywords here
+      alert("Keywords: " + (data.keywords ? data.keywords.join(", ") : "None"));
+      if (onUpload) onUpload(file);
     } catch (err: any) {
       setError(err.message || "Upload failed");
     } finally {
