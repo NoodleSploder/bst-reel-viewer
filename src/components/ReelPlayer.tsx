@@ -35,7 +35,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reel, onLike, onDislike 
             className="bg-pink-500 text-white px-4 py-2 rounded-full font-semibold hover:bg-pink-600 transition order-2"
             onClick={() => onLike(reel.id)}
           >
-            ❤️ Like ({reel.likes})
+            ❤️ Like
           </button>
         </div>
       </div>
